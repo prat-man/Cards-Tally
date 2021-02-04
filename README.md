@@ -1,5 +1,5 @@
 # Cards Tally
-A simple android app to tally playing card scores.<br>
+A simple android app to tally playing-card scores.<br>
 Keep playing-card scores easily with automatic total score calculation and tally calculation.
 <br><br>
 
