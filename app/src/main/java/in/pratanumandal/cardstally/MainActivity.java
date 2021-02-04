@@ -11,6 +11,7 @@ import android.text.InputType;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.TypedValue;
@@ -72,14 +73,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                String version = "";
-                try {
-                    PackageInfo pInfo = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
-                    version = pInfo.versionName;
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-
                 TextView title = new TextView(this);
                 SpannableString titleString = new SpannableString("Cards Tally");
                 titleString.setSpan(new StyleSpan(Typeface.BOLD), 0, titleString.length(), 0);
@@ -89,8 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 title.setPadding(10, 50, 10, 5);
 
                 TextView message = new TextView(this);
-                SpannableString messageString = new SpannableString(version + "\n\nPratanu Mandal\npratanumandal.in");
+                SpannableString messageString = new SpannableString(getVersion() + "\n\nPratanu Mandal\npratanumandal.in");
                 messageString.setSpan(new StyleSpan(Typeface.BOLD), 0, messageString.toString().indexOf("\n"), 0);
+                messageString.setSpan(new RelativeSizeSpan(1.15f), 0, messageString.toString().indexOf("\n"), 0);
                 Linkify.addLinks(messageString, Linkify.WEB_URLS);
                 message.setText(messageString);
                 message.setMovementMethod(LinkMovementMethod.getInstance());
@@ -369,6 +363,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return score;
+    }
+
+    public String getVersion() {
+        String version = "";
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
+            version = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
     }
 
 }
