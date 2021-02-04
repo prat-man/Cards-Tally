@@ -1,6 +1,7 @@
 package in.pratanumandal.cardstally;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -31,18 +32,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int ROWS = 50;
-    private static final int PLAYERS = 4;
+    public int[][] cardData = new int[Constants.ROWS][Constants.PLAYERS];
+    public EditText[][] editData = new EditText[Constants.ROWS][Constants.PLAYERS];
 
-    public int[][] cardData = new int[ROWS][PLAYERS];
-    public EditText[][] editData = new EditText[ROWS][PLAYERS];
-
-    public Player[] players = new Player[PLAYERS];
+    public Player[] players = new Player[Constants.PLAYERS];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         initializeTally();
         initializeReset();
 
-        fillTable(ROWS);
+        fillTable(Constants.ROWS);
     }
 
     @Override
@@ -117,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializePlayers() {
-        for (int i = 0; i < PLAYERS; i++) {
+        for (int i = 0; i < Constants.PLAYERS; i++) {
             Player player = players[i] = new Player("Player " + (i + 1), 0);
             EditText name = getNameField(i);
 
@@ -166,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 headerSpace.setMinimumWidth(rowNo.getMeasuredWidth());
             }
 
-            for (int j = 0; j < PLAYERS; j++) {
+            for (int j = 0; j < Constants.PLAYERS; j++) {
                 EditText edit = editData[i][j] = new EditText(this);
                 edit.setInputType(InputType.TYPE_CLASS_NUMBER);
                 edit.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -237,8 +234,8 @@ public class MainActivity extends AppCompatActivity {
             alertDialogBuilder.setMessage("Do you want to reset the table?");
             alertDialogBuilder.setTitle("Reset");
             alertDialogBuilder.setPositiveButton("Yes", (dialog, id) -> {
-                for (int i = 0; i < ROWS; i++) {
-                    for (int j = 0; j < PLAYERS; j++) {
+                for (int i = 0; i < Constants.ROWS; i++) {
+                    for (int j = 0; j < Constants.PLAYERS; j++) {
                         editData[i][j].setText("");
                     }
                 }
@@ -251,66 +248,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeTally() {
         Button button = findViewById(R.id.tallyButton);
-        button.setOnClickListener((v) -> tally(players));
-    }
-
-    public void tally(Player... players) {
-        sortPlayers(players);
-
-        int[][] scores = new int[PLAYERS][PLAYERS];
-
-        for (int i = 0; i < PLAYERS - 1; i++) {
-            int cardI = players[i].cards;
-            for (int j = i + 1; j < PLAYERS; j++) {
-                int cardJ = players[j].cards;
-                scores[i][j] = cardI - cardJ;
-            }
-        }
-
-        for (int k = 0; k < PLAYERS - 1; k++) {
-            for (int i = k + 1; i < PLAYERS - 1; i++) {
-                for (int j = i + 1; j < PLAYERS && scores[k][i] > 0; j++) {
-                    if (scores[k][i] > scores[i][j]) {
-                        scores[k][i] -= scores[i][j];
-                        scores[k][j] += scores[i][j];
-                        scores[i][j] = 0;
-                    }
-                    else {
-                        scores[i][j] -= scores[k][i];
-                        scores[k][j] += scores[k][i];
-                        scores[k][i] = 0;
-                    }
-                }
-            }
-        }
-
-        showTally(scores, players);
-    }
-
-    public void sortPlayers(Player... players) {
-        Arrays.sort(players, Collections.reverseOrder());
-    }
-
-    public void showTally(int[][] scores, Player... players) {
-        String tally = "";
-
-        for (int i = 0; i < scores.length; i++) {
-            for (int j = 0; j < scores.length; j++) {
-                if (scores[i][j] != 0) {
-                    tally += players[i].name + "   >   " + players[j].name + ":   " + scores[i][j] + "  cards\n";
-                }
-            }
-        }
-
-        if (tally.isEmpty())
-            tally = "Nothing to tally";
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage(tally);
-        alertDialogBuilder.setTitle("Tally");
-        alertDialogBuilder.setPositiveButton("OK", (dialog, id) -> {});
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+        button.setOnClickListener((v) -> {
+            Intent intent = new Intent(getBaseContext(), TallyActivity.class);
+            String playersString = new Gson().toJson(players);
+            intent.putExtra("PLAYERS", playersString);
+            startActivity(intent);
+        });
     }
 
     public EditText getNameField(int playerNo) {
