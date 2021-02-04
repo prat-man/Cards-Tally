@@ -197,9 +197,11 @@ public class MainActivity extends AppCompatActivity {
 
                 cardData[i][j] = 0;
 
+                Player player = players[j];
+                TextView score = getScoreField(j);
+
                 int finalI = i;
                 int finalJ = j;
-                Player player = players[j];
                 edit.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void afterTextChanged(Editable s) {}
@@ -217,26 +219,6 @@ public class MainActivity extends AppCompatActivity {
 
                         int value = 0;
                         if (s.length() != 0) value = Integer.valueOf(s.toString());
-
-                        TextView score = null;
-
-                        switch (finalJ) {
-                            case 0:
-                                score = findViewById(R.id.player1Cards);
-                                break;
-
-                            case 1:
-                                score = findViewById(R.id.player2Cards);
-                                break;
-
-                            case 2:
-                                score = findViewById(R.id.player3Cards);
-                                break;
-
-                            case 3:
-                                score = findViewById(R.id.player4Cards);
-                                break;
-                        }
 
                         int total = Integer.valueOf(score.getText().toString()) - cardData[finalI][finalJ] + value;
                         score.setText(String.valueOf(total));
