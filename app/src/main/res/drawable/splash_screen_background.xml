@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+    <item android:drawable="@color/colorBackground"/>
+    <item android:drawable="@drawable/ic_playing_cards"
+        android:gravity="center"
+        android:width="150dp"
+        android:height="150dp"/>
+    <item android:drawable="@drawable/ic_copyright"
+        android:gravity="center|bottom"
+        android:width="200dp"
+        android:height="40dp"/>
+</layer-list>
