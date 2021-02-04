@@ -36,10 +36,12 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
 
     private static final int ROWS = 50;
+    private static final int PLAYERS = 4;
 
-    public int[][] cardData = new int[ROWS][4];
+    public int[][] cardData = new int[ROWS][PLAYERS];
+    public EditText[][] editData = new EditText[ROWS][PLAYERS];
 
-    public Player[] players = new Player[4];
+    public Player[] players = new Player[PLAYERS];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializePlayers() {
-        for (int i = 0; i < players.length; i++) {
+        for (int i = 0; i < PLAYERS; i++) {
             Player player = players[i] = new Player("Player " + (i + 1), 0);
             EditText name = getNameField(i);
 
@@ -170,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
                 headerSpace.setMinimumWidth(rowNo.getMeasuredWidth());
             }
 
-            for (int j = 0; j < 4; j++) {
-                EditText edit = new EditText(this);
+            for (int j = 0; j < PLAYERS; j++) {
+                EditText edit = editData[i][j] = new EditText(this);
                 edit.setInputType(InputType.TYPE_CLASS_NUMBER);
                 edit.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
                 edit.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -241,13 +243,14 @@ public class MainActivity extends AppCompatActivity {
             alertDialogBuilder.setMessage("Do you want to reset the table?");
             alertDialogBuilder.setTitle("Reset");
             alertDialogBuilder.setPositiveButton("Yes", (dialog, id) -> {
-                fillTable(ROWS);
+                for (int i = 0; i < ROWS; i++) {
+                    for (int j = 0; j < PLAYERS; j++) {
+                        editData[i][j].setText("");
+                    }
+                }
 
-                for (int i = 0; i < players.length; i++) {
+                for (int i = 0; i < PLAYERS; i++) {
                     players[i].cards = 0;
-
-                    TextView score = getScoreField(i);
-                    score.setText("0");
                 }
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, id) -> {});
@@ -264,19 +267,19 @@ public class MainActivity extends AppCompatActivity {
     public void tally(Player... players) {
         sortPlayers(players);
 
-        int[][] scores = new int[players.length][players.length];
+        int[][] scores = new int[PLAYERS][PLAYERS];
 
-        for (int i = 0; i < players.length - 1; i++) {
+        for (int i = 0; i < PLAYERS - 1; i++) {
             int cardI = players[i].cards;
-            for (int j = i + 1; j < players.length; j++) {
+            for (int j = i + 1; j < PLAYERS; j++) {
                 int cardJ = players[j].cards;
                 scores[i][j] = cardI - cardJ;
             }
         }
 
-        for (int k = 0; k < players.length - 1; k++) {
-            for (int i = k + 1; i < players.length - 1; i++) {
-                for (int j = i + 1; j < players.length && scores[k][i] > 0; j++) {
+        for (int k = 0; k < PLAYERS - 1; k++) {
+            for (int i = k + 1; i < PLAYERS - 1; i++) {
+                for (int j = i + 1; j < PLAYERS && scores[k][i] > 0; j++) {
                     if (scores[k][i] > scores[i][j]) {
                         scores[k][i] -= scores[i][j];
                         scores[k][j] += scores[i][j];
