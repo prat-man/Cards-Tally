@@ -242,10 +242,6 @@ public class MainActivity extends AppCompatActivity {
                         editData[i][j].setText("");
                     }
                 }
-
-                for (int i = 0; i < PLAYERS; i++) {
-                    players[i].cards = 0;
-                }
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, id) -> {});
             AlertDialog alertDialog = alertDialogBuilder.create();
