@@ -39,4 +39,18 @@ public class Persistence {
         editor.apply();
     }
 
+    public static Boolean getResetRowCount(Context context) {
+        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+        return settings.getBoolean("resetRowCount", false);
+    }
+
+    public static void setResetRowCount(Context context, Boolean resetRowCount) {
+        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putBoolean("resetRowCount", resetRowCount);
+
+        editor.apply();
+    }
+
 }

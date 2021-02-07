@@ -104,17 +104,36 @@
 
     </TableLayout>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <TableLayout
-            android:id="@+id/scoreTable"
+        <ScrollView
+            android:id="@+id/tableVScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TableLayout
+                android:id="@+id/scoreTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="65dp"
+                android:stretchColumns="1,2,3,4" />
+        </ScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1,2,3,4" />
-    </ScrollView>
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:clickable="true"
+            android:contentDescription="Add"
+            app:srcCompat="@drawable/ic_baseline_add_24" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
