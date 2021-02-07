@@ -120,12 +120,14 @@ public class MainActivity extends AppCompatActivity {
     public void initializePlayers() {
         for (int i = 0; i < Constants.PLAYERS; i++) {
             EditText name = getNameField(i);
+            TextView score = getScoreField(i);
 
             if (gameInfo.players[i] == null) {
                 gameInfo.players[i] = new Player("Player " + (i + 1), 0);
             }
             else {
                 name.setText(gameInfo.players[i].name);
+                score.setText(String.valueOf(gameInfo.players[i].cards));
             }
 
             Player player = gameInfo.players[i];
