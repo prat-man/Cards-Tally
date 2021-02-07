@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public List<EditText[]> editData = new ArrayList<>();
     public List<TextView> rowNoData = new ArrayList<>();
     public int rowCount = 0;
+    public boolean persistenceOff = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,7 +260,9 @@ public class MainActivity extends AppCompatActivity {
 
                     gameInfo.cardData.get(finalI)[finalJ] = value;
 
-                    Persistence.saveGame(getApplicationContext(), gameInfo);
+                    if (!persistenceOff) {
+                        Persistence.saveGame(getApplicationContext(), gameInfo);
+                    }
                 }
             });
         }
@@ -305,11 +308,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                persistenceOff = true;
+
                 for (int i = 0; i < rowCount; i++) {
                     for (int j = 0; j < Constants.PLAYERS; j++) {
                         editData.get(i)[j].setText("");
                     }
                 }
+
+                persistenceOff = false;
 
                 if (Persistence.getResetRowCount(getApplicationContext())) {
                     TableLayout tableLayout = findViewById(R.id.scoreTable);
@@ -325,18 +332,9 @@ public class MainActivity extends AppCompatActivity {
                     gameInfo.rowCount = Constants.DEFAULT_ROWS;
 
                     adjustHeaderSpace();
-
-                    Persistence.saveGame(getApplicationContext(), gameInfo);
                 }
 
-                /*for (int i = 0; i < Constants.PLAYERS; i++) {
-                    gameInfo.players[i].cards = 0;
-
-                    TextView score = getNameField(i);
-                    score.setText("0");
-                }
-
-                Persistence.saveGame(getApplicationContext(), gameInfo);*/
+                Persistence.saveGame(getApplicationContext(), gameInfo);
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, id) -> {});
             AlertDialog alertDialog = alertDialogBuilder.create();
