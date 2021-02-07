@@ -94,12 +94,12 @@ public class TallyActivity extends AppCompatActivity {
 
                     TextView from = new TextView(this);
                     from.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                    from.setText(players[i].name);
+                    from.setText(players[i].name.isEmpty() ? players[i].defaultName : players[i].name);
                     row.addView(from);
 
                     TextView to = new TextView(this);
                     to.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                    to.setText(players[j].name);
+                    to.setText(players[i].name.isEmpty() ? players[i].defaultName : players[i].name);
                     row.addView(to);
 
                     TextView cards = new TextView(this);

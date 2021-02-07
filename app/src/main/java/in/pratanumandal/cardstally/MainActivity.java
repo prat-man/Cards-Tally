@@ -1,6 +1,7 @@
 package in.pratanumandal.cardstally;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -21,7 +22,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -36,10 +40,8 @@ import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
 
-    public int[][] cardData = new int[Constants.ROWS][Constants.PLAYERS];
+    public GameInfo gameInfo;
     public EditText[][] editData = new EditText[Constants.ROWS][Constants.PLAYERS];
-
-    public Player[] players = new Player[Constants.PLAYERS];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+
+        gameInfo = Persistence.loadGame(getApplicationContext());
 
         initializePlayers();
         initializeTally();
@@ -115,8 +119,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializePlayers() {
         for (int i = 0; i < Constants.PLAYERS; i++) {
-            Player player = players[i] = new Player("Player " + (i + 1), 0);
             EditText name = getNameField(i);
+
+            if (gameInfo.players[i] == null) {
+                gameInfo.players[i] = new Player("Player " + (i + 1), 0);
+            }
+            else {
+                name.setText(gameInfo.players[i].name);
+            }
+
+            Player player = gameInfo.players[i];
 
             name.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -128,15 +140,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (s.length() == 0) {
-                        player.name = player.defaultName;
+                        player.name = "";
                     }
                     else if (s.toString().trim().isEmpty()) {
                         name.setText("");
-                        player.name = player.defaultName;
+                        player.name = "";
                     }
                     else {
                         player.name = s.toString();
                     }
+
+                    Persistence.saveGame(getApplicationContext(), gameInfo);
                 }
             });
         }
@@ -171,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
                 edit.setHint("0");
                 row.addView(edit);
 
+                if (gameInfo.cardData[i][j] != 0) {
+                    edit.setText(String.valueOf(gameInfo.cardData[i][j]));
+                }
+
                 if (i == rows - 1) {
                     TextView score = getScoreField(j);
                     score.addTextChangedListener(new TextWatcher() {
@@ -188,9 +206,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
 
-                cardData[i][j] = 0;
-
-                Player player = players[j];
+                Player player = gameInfo.players[j];
                 TextView score = getScoreField(j);
 
                 int finalI = i;
@@ -213,12 +229,14 @@ public class MainActivity extends AppCompatActivity {
                         int value = 0;
                         if (s.length() != 0) value = Integer.valueOf(s.toString());
 
-                        int total = Integer.valueOf(score.getText().toString()) - cardData[finalI][finalJ] + value;
+                        int total = player.cards - gameInfo.cardData[finalI][finalJ] + value;
                         score.setText(String.valueOf(total));
 
                         player.cards = total;
 
-                        cardData[finalI][finalJ] = value;
+                        gameInfo.cardData[finalI][finalJ] = value;
+
+                        Persistence.saveGame(getApplicationContext(), gameInfo);
                     }
                 });
             }
@@ -231,12 +249,32 @@ public class MainActivity extends AppCompatActivity {
         Button button = findViewById(R.id.resetButton);
         button.setOnClickListener((v) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            LinearLayout checkBoxWrapper = new LinearLayout(this);
+            checkBoxWrapper.setPadding(40, 0, 40, 0);
+
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setChecked(Persistence.getDeleteNames(getApplicationContext()));
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                Persistence.setDeleteNames(getApplicationContext(), isChecked);
+            });
+            checkBox.setText("Delete player names");
+            checkBoxWrapper.addView(checkBox);
+
             alertDialogBuilder.setMessage("Do you want to reset the table?");
+            alertDialogBuilder.setView(checkBoxWrapper);
             alertDialogBuilder.setTitle("Reset");
             alertDialogBuilder.setPositiveButton("Yes", (dialog, id) -> {
                 for (int i = 0; i < Constants.ROWS; i++) {
                     for (int j = 0; j < Constants.PLAYERS; j++) {
                         editData[i][j].setText("");
+                    }
+                }
+
+                if (Persistence.getDeleteNames(getApplicationContext())) {
+                    for (int i = 0; i < Constants.PLAYERS; i++) {
+                        EditText name = getNameField(i);
+                        name.setText("");
                     }
                 }
             });
@@ -250,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         Button button = findViewById(R.id.tallyButton);
         button.setOnClickListener((v) -> {
             Intent intent = new Intent(getBaseContext(), TallyActivity.class);
-            String playersString = new Gson().toJson(players);
+            String playersString = new Gson().toJson(gameInfo.players);
             intent.putExtra("PLAYERS", playersString);
             startActivity(intent);
         });

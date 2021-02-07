@@ -6,8 +6,9 @@ public class Player implements Comparable<Player> {
     public String name;
     public int cards;
 
-    public Player(String name, int cards) {
-        this.defaultName = this.name = name;
+    public Player(String defaultName, int cards) {
+        this.defaultName = defaultName;
+        this.name = "";
         this.cards = cards;
     }
 
