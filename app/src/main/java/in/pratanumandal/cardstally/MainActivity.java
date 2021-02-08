@@ -1,12 +1,15 @@
 package in.pratanumandal.cardstally;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableString;
@@ -38,8 +41,11 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,31 +87,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                TextView title = new TextView(this);
-                SpannableString titleString = new SpannableString("Cards Tally");
-                titleString.setSpan(new StyleSpan(Typeface.BOLD), 0, titleString.length(), 0);
-                title.setText(titleString);
-                title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
-                title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                title.setPadding(10, 50, 10, 5);
-
-                TextView message = new TextView(this);
-                SpannableString messageString = new SpannableString(getVersion() + "\n\nPratanu Mandal\npratanumandal.in");
-                messageString.setSpan(new StyleSpan(Typeface.BOLD), 0, messageString.toString().indexOf("\n"), 0);
-                messageString.setSpan(new RelativeSizeSpan(1.15f), 0, messageString.toString().indexOf("\n"), 0);
-                Linkify.addLinks(messageString, Linkify.WEB_URLS);
-                message.setText(messageString);
-                message.setMovementMethod(LinkMovementMethod.getInstance());
-                message.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                message.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                message.setPadding(10, 5, 10, 80);
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setView(message);
-                alertDialogBuilder.setCustomTitle(title);
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
+                Commons.showInfo(this);
                 return true;
 
             default:
@@ -273,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeReset() {
-        Button button = findViewById(R.id.resetButton);
+        TextView button = findViewById(R.id.resetButton);
         button.setOnClickListener((v) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
@@ -351,14 +333,17 @@ public class MainActivity extends AppCompatActivity {
             gameInfo.rowCount++;
             Persistence.saveGame(getApplicationContext(), gameInfo);
 
-            ScrollView tableVScroll = findViewById(R.id.tableVScroll);
-            tableVScroll.fullScroll(View.FOCUS_DOWN);
-            editData.get(rowCount - 1)[0].requestFocus();
+            new Handler(Looper.getMainLooper()).post(() -> {
+                ScrollView tableVScroll = findViewById(R.id.tableVScroll);
+                tableVScroll.fullScroll(View.FOCUS_DOWN);
+
+                editData.get(rowCount - 1)[0].requestFocus();
+            });
         });
     }
 
     public void initializeTally() {
-        Button button = findViewById(R.id.tallyButton);
+        TextView button = findViewById(R.id.tallyButton);
         button.setOnClickListener((v) -> {
             Intent intent = new Intent(getBaseContext(), TallyActivity.class);
             String playersString = new Gson().toJson(gameInfo.players);
@@ -420,17 +405,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return score;
-    }
-
-    public String getVersion() {
-        String version = "";
-        try {
-            PackageInfo pInfo = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
-            version = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
     }
 
 }

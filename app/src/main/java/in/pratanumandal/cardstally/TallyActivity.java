@@ -4,9 +4,20 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.util.Linkify;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -14,6 +25,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 import java.util.Arrays;
@@ -28,21 +40,33 @@ public class TallyActivity extends AppCompatActivity {
 
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
-        bar.setDisplayHomeAsUpEnabled(true);
 
         String playersString = getIntent().getExtras().getString("PLAYERS");
         Player[] players = new Gson().fromJson(playersString, Player[].class);
 
         tally(players);
 
-        Button backButton = findViewById(R.id.backButton);
+        FloatingActionButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(view -> finish());
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        finish();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_info:
+                Commons.showInfo(this);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void tally(Player... players) {
@@ -130,6 +154,17 @@ public class TallyActivity extends AppCompatActivity {
 
             table.addView(row);
         }
+    }
+
+    public String getVersion() {
+        String version = "";
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
+            version = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
     }
 
 }
