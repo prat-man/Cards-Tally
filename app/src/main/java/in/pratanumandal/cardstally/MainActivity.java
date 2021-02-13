@@ -74,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
         initializeAdd();
 
         fillTable();
+
+        FloatingActionButton addButton = findViewById(R.id.addButton);
+        Space bottomAppBarSpace = findViewById(R.id.bottomAppBarSpace);
+        addButton.measure(0, 0);
+        bottomAppBarSpace.setMinimumWidth(addButton.getMeasuredWidth() + 40);
     }
 
     @Override
