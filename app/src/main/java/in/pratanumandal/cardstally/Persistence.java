@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 public class Persistence {
 
     public static GameInfo loadGame(Context context) {
-        SharedPreferences settings = context.getSharedPreferences("GAME_INFO", 0);
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         String gameData = settings.getString("gameData", null);
 
         if (gameData == null) return new GameInfo();
@@ -16,7 +16,7 @@ public class Persistence {
     }
 
     public static void saveGame(Context context, GameInfo gameInfo) {
-        SharedPreferences settings = context.getSharedPreferences("GAME_INFO", 0);
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
 
         String gameData = new Gson().toJson(gameInfo);
@@ -26,12 +26,12 @@ public class Persistence {
     }
 
     public static Boolean getDeleteNames(Context context) {
-        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         return settings.getBoolean("deleteNames", false);
     }
 
-    public static void setDeleteNames(Context context, Boolean deleteNames) {
-        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+    public static void setDeleteNames(Context context, boolean deleteNames) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
 
         editor.putBoolean("deleteNames", deleteNames);
@@ -40,12 +40,12 @@ public class Persistence {
     }
 
     public static Boolean getResetRowCount(Context context) {
-        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         return settings.getBoolean("resetRowCount", false);
     }
 
-    public static void setResetRowCount(Context context, Boolean resetRowCount) {
-        SharedPreferences settings = context.getSharedPreferences("SETTINGS", 0);
+    public static void setResetRowCount(Context context, boolean resetRowCount) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
 
         editor.putBoolean("resetRowCount", resetRowCount);
