@@ -1,29 +1,20 @@
 package in.pratanumandal.cardstally;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -123,7 +114,7 @@ public class TallyActivity extends AppCompatActivity {
 
                     TextView to = new TextView(this);
                     to.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                    to.setText(players[i].name.isEmpty() ? players[i].defaultName : players[i].name);
+                    to.setText(players[j].name.isEmpty() ? players[j].defaultName : players[j].name);
                     row.addView(to);
 
                     TextView cards = new TextView(this);

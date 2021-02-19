@@ -1,29 +1,19 @@
 package in.pratanumandal.cardstally;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StyleSpan;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -40,8 +30,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,30 +179,13 @@ public class MainActivity extends AppCompatActivity {
         for (int j = 0; j < Constants.PLAYERS; j++) {
             EditText edit = editData.get(i)[j] = new EditText(this);
             edit.setInputType(InputType.TYPE_CLASS_NUMBER);
-            edit.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            edit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT));
             edit.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             edit.setHint("0");
             row.addView(edit);
 
             if (gameInfo.cardData.get(i)[j] != 0) {
                 edit.setText(String.valueOf(gameInfo.cardData.get(i)[j]));
-            }
-
-            if (i == 0) {
-                TextView score = getScoreField(j);
-                score.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void afterTextChanged(Editable s) {}
-
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        score.measure(0, 0);
-                        edit.setMinimumWidth(score.getMeasuredWidth());
-                    }
-                });
             }
 
             Player player = gameInfo.players[j];
@@ -261,7 +232,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeReset() {
         TextView button = findViewById(R.id.resetButton);
+        AtomicBoolean resetting = new AtomicBoolean(false);
         button.setOnClickListener((v) -> {
+            if (resetting.get()) return;
+            resetting.set(true);
+
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
             LinearLayout checkBoxWrapper = new LinearLayout(this);
@@ -275,6 +250,10 @@ public class MainActivity extends AppCompatActivity {
             });
             checkBox1.setText("Delete player names");
             checkBoxWrapper.addView(checkBox1);
+
+            Space space = new Space(this);
+            space.setMinimumHeight(15);
+            checkBoxWrapper.addView(space);
 
             CheckBox checkBox2 = new CheckBox(this);
             checkBox2.setChecked(Persistence.getResetRowCount(getApplicationContext()));
@@ -325,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, id) -> {});
             AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.setOnDismissListener((dialog) -> resetting.set(false));
             alertDialog.show();
         });
     }
