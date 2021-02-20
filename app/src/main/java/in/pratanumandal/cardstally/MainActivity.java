@@ -33,7 +33,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                Commons.showInfo(this);
+                Commons.showInfo(this, item);
                 return true;
 
             case R.id.action_settings:
-                Commons.showSettings(this, null);
+                Commons.showSettings(this, item, null);
                 return true;
 
             default:
@@ -236,10 +235,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeReset() {
         TextView button = findViewById(R.id.resetButton);
-        AtomicBoolean resetting = new AtomicBoolean(false);
         button.setOnClickListener((v) -> {
-            if (resetting.get()) return;
-            resetting.set(true);
+            button.setEnabled(false);
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
@@ -308,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialogBuilder.setNegativeButton("No", (dialog, id) -> {});
             AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.setOnDismissListener((dialog) -> resetting.set(false));
+            alertDialog.setOnDismissListener((dialog) -> button.setEnabled(true));
             alertDialog.show();
         });
     }

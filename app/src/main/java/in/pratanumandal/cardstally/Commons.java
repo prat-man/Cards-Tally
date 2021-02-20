@@ -14,6 +14,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,7 +24,9 @@ import android.widget.TextView;
 
 public class Commons {
 
-    public static void showInfo(Context context) {
+    public static void showInfo(Context context, MenuItem item) {
+        item.setEnabled(false);
+
         TextView title = new TextView(context);
         SpannableString titleString = new SpannableString("Cards Tally");
         titleString.setSpan(new StyleSpan(Typeface.BOLD), 0, titleString.length(), 0);
@@ -47,10 +50,13 @@ public class Commons {
         alertDialogBuilder.setView(message);
         alertDialogBuilder.setCustomTitle(title);
         AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setOnDismissListener((dialog) -> item.setEnabled(true));
         alertDialog.show();
     }
 
-    public static void showSettings(Context context, TallyActivity.Callback callback) {
+    public static void showSettings(Context context, MenuItem item, TallyActivity.Callback callback) {
+        item.setEnabled(false);
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
         LinearLayout checkBoxWrapper = new LinearLayout(context);
@@ -127,6 +133,7 @@ public class Commons {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setOnDismissListener((dialog) -> {
             if (callback != null) callback.reinitialize();
+            item.setEnabled(true);
         });
         alertDialog.show();
     }

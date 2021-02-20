@@ -52,11 +52,11 @@ public class TallyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                Commons.showInfo(this);
+                Commons.showInfo(this, item);
                 return true;
 
             case R.id.action_settings:
-                Commons.showSettings(this, () -> this.recreate());
+                Commons.showSettings(this, item, () -> this.recreate());
                 return true;
 
             default:
