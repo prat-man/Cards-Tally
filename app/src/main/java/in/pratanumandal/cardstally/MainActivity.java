@@ -83,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
                 Commons.showInfo(this);
                 return true;
 
+            case R.id.action_settings:
+                Commons.showSettings(this, null);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

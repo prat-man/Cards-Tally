@@ -53,4 +53,46 @@ public class Persistence {
         editor.apply();
     }
 
+    public static Boolean getReduceTally(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        return settings.getBoolean("reduceTally", true);
+    }
+
+    public static void setReduceTally(Context context, boolean reduceTally) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putBoolean("reduceTally", reduceTally);
+
+        editor.apply();
+    }
+
+    public static Boolean getMinimumThreshold(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        return settings.getBoolean("minimumThreshold", false);
+    }
+
+    public static void setMinimumThreshold(Context context, boolean minimumThreshold) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putBoolean("minimumThreshold", minimumThreshold);
+
+        editor.apply();
+    }
+
+    public static String getMinimumThresholdValue(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        return settings.getString("minimumThresholdValue", null);
+    }
+
+    public static void setMinimumThresholdValue(Context context, String minimumThresholdValue) {
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putString("minimumThresholdValue", minimumThresholdValue);
+
+        editor.apply();
+    }
+
 }

@@ -55,6 +55,10 @@ public class TallyActivity extends AppCompatActivity {
                 Commons.showInfo(this);
                 return true;
 
+            case R.id.action_settings:
+                Commons.showSettings(this, () -> this.recreate());
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -73,18 +77,32 @@ public class TallyActivity extends AppCompatActivity {
             }
         }
 
-        for (int k = 0; k < Constants.PLAYERS - 1; k++) {
-            for (int i = k + 1; i < Constants.PLAYERS - 1; i++) {
-                for (int j = i + 1; j < Constants.PLAYERS && scores[k][i] > 0; j++) {
-                    if (scores[k][i] > scores[i][j]) {
-                        scores[k][i] -= scores[i][j];
-                        scores[k][j] += scores[i][j];
-                        scores[i][j] = 0;
+        if (Persistence.getReduceTally(this)) {
+            for (int k = 0; k < Constants.PLAYERS - 1; k++) {
+                for (int i = k + 1; i < Constants.PLAYERS - 1; i++) {
+                    for (int j = i + 1; j < Constants.PLAYERS && scores[k][i] > 0; j++) {
+                        if (scores[k][i] > scores[i][j]) {
+                            scores[k][i] -= scores[i][j];
+                            scores[k][j] += scores[i][j];
+                            scores[i][j] = 0;
+                        } else {
+                            scores[i][j] -= scores[k][i];
+                            scores[k][j] += scores[k][i];
+                            scores[k][i] = 0;
+                        }
                     }
-                    else {
-                        scores[i][j] -= scores[k][i];
-                        scores[k][j] += scores[k][i];
-                        scores[k][i] = 0;
+                }
+            }
+        }
+
+        if (Persistence.getMinimumThreshold(this)) {
+            String thresholdString = Persistence.getMinimumThresholdValue(this);
+            int threshold = thresholdString != null ? Integer.valueOf(thresholdString) : 0;
+
+            for (int i = 0; i < Constants.PLAYERS - 1; i++) {
+                for (int j = i + 1; j < Constants.PLAYERS; j++) {
+                    if (scores[i][j] < threshold) {
+                        scores[i][j] = 0;
                     }
                 }
             }
@@ -156,6 +174,11 @@ public class TallyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return version;
+    }
+
+    @FunctionalInterface
+    public interface Callback {
+        void reinitialize();
     }
 
 }
